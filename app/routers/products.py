@@ -40,15 +40,33 @@ def create_product(
 
 # Get all products
 # @router.get("/")
+# @router.get("/")
+# def get_products(
+#     search: str = "",
+#     db: Session = Depends(get_db)
+# ):
+
+#     return db.query(Product).filter(
+#         Product.name.contains(search)
+#     ).all()
 @router.get("/")
 def get_products(
     search: str = "",
+    min_price: float = 0,
+    max_price: float = 100000,
+    skip: int = 0,
+    limit: int = 10,
     db: Session = Depends(get_db)
 ):
 
-    return db.query(Product).filter(
-        Product.name.contains(search)
-    ).all()
+    products = db.query(Product).filter(
+        Product.name.contains(search),
+        Product.price >= min_price,
+        Product.price <= max_price
+    ).offset(skip).limit(limit).all()
+
+    return products
+    
 
 # def get_products(
 #     db: Session = Depends(get_db)
